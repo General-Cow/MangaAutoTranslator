@@ -104,11 +104,12 @@ def eval_translations(translated_text, input_references):
     
     bleu_metric = load_metric("bleu")
     results = bleu_metric.compute(predictions=tr_text_lists, references=formatted_references)
-
+    print(results)
+    
     return results
     
     
-def AutoTranslator(input_references, img="", file_dir="", translation_model="Helsinki-NLP/opus-mt-ja-en", multi_file=False, concat_sent=False, eval_results=True):
+def AutoTranslator(img="", file_dir="", translation_model="Helsinki-NLP/opus-mt-ja-en", input_references=[], multi_file=False, concat_sent=False, eval_results=True):
     jp_text_list = ocr_extractor(img=img, file_dir=file_dir)
     translated_text_list = get_translations(jp_text_list, translation_model=translation_model, multi_file=multi_file, concat_sent=concat_sent)
     if eval_results:
