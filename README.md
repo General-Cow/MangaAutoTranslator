@@ -29,7 +29,7 @@ Install them using pip:
 - `eval_translations`: Evaluates translations using BLEU score.
 - `AutoTranslator`: Combines all steps into a single, streamlined function.
 
-##Configuration Options
+## Configuration Options
 - `multi_file`: Set to True to process multiple images in a directory.
 - `concat_sent`: Concatenate all sentences into one string before translation.
 - `translation_model`: Choose a Hugging Face translation model (default: `Helsinki-NLP/opus-mt-ja-en`).
