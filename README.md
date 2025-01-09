@@ -12,10 +12,10 @@ MangaAutoTranslator is a Python-based script designed to automate the the proces
 ## Installation/Dependencies
 Ensure the following Python libraries are installed:
 
-Pillow
-manga_ocr
-transformers
-datasets
+- `Pillow`
+- `manga_ocr`
+- `transformers`
+- `datasets`
 
 Install them using pip:
 
@@ -57,7 +57,7 @@ jp_text_list = ocr_extractor(img="path/to/image.png", file_dir="path/to/image_di
 ```
 
 ### 2. Translate Text
-The 'get_translations' function translates extracted Japanese text into English using input translation model. Sentences can be concatenated if desired.
+The `get_translations` function translates extracted Japanese text into English using input translation model. Sentences can be concatenated if desired.
 
 ```
 from MangaAutoTranslator import get_translations
