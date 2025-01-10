@@ -1,7 +1,6 @@
 import os
 from PIL import Image
 from manga_ocr import MangaOcr
-import easyocr
 from transformers import pipeline
 from datasets import load_metric
 
