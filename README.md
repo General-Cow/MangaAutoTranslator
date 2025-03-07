@@ -91,6 +91,7 @@ jp_text, en_text, eval_results = AutoTranslator(
 ```
 
 ## Future Work
+- Currently being updated to account for significant Hugging Face API changes since repository was initially developed.
 - Try different OCR methods and better automation for finding text in images to eliminate need to crop word bubbles.
    - Text position tracking/Overlay translations
 - Improve translation quality
