@@ -1,9 +1,10 @@
 from transformers import pipeline
-
+from ollama import chat
+from ollama import ChatResponse
 
 def get_translations(jp_text_list, translation_model="Helsinki-NLP/opus-mt-ja-en", concat_sent=False):
     """
-    Translate extracted text to English
+    Translate extracted text to English using translation model.
     
     Args:
         jp_text_list (list of strings): List of extracted Japanese text
@@ -16,7 +17,8 @@ def get_translations(jp_text_list, translation_model="Helsinki-NLP/opus-mt-ja-en
 
     if not jp_text_list:
         return []
-    translate_pipe = pipeline("translation", model=translation_model,src_lang="ja", tgt_lang="en")  #src_lang="jpn_Latn", tgt_lang="eng_Latn") # added src_lang and tgt_lang for NLLB models
+    
+    translate_pipe = pipeline("translation", model=translation_model, src_lang="ja", tgt_lang="en")  #src_lang="jpn_Latn", tgt_lang="eng_Latn") # added src_lang and tgt_lang for NLLB models
 
     if concat_sent:
         concatenated_text = "".join(jp_text_list)
@@ -28,25 +30,33 @@ def get_translations(jp_text_list, translation_model="Helsinki-NLP/opus-mt-ja-en
 
 
 def get_llm_translations(jp_text_list, llm_model='gemma3:4b'):
-
-
-    from ollama import chat
-    from ollama import ChatResponse
-
+    """
+    Translate extracted text to English using an LLM.
+    
+    Args:
+        jp_text_list (list of strings): List of extracted Japanese text
+        llm_model (str): LLM model to use for translation.
+        
+    Returns:
+        list: list of translated English text
+    """
     translated_text_list = []
     for jp_text in jp_text_list:
-
-        print(jp_text_list)
         response: ChatResponse = chat(model=llm_model, messages=[
-        {
-            'role': 'system',
-            'content': 'You are a helpful assistant that translates Japanese to English and only returns the translated text without any additions.',
-        },
-        {
-            'role': 'user',
-            'content': jp_text,
-        },
+            {
+                'role': 'system',
+                'content': (
+                    'Translate the following Japanese text to English. '
+                    'Return ONLY the translated English text. '
+                    'Do not add notes, explanations, or formatting.'
+                            ),
+            },
+            {
+                'role': 'user',
+                'content': jp_text,
+            },
         ])
+
         translated_text_list.append(response.message.content)
 
     return translated_text_list

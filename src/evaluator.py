@@ -53,6 +53,5 @@ def eval_translations(translated_text, input_references):
     
     bleu_metric = load("bleu")
     results = bleu_metric.compute(predictions=tr_text_lists, references=formatted_references)
-    # print(results)
     
     return results
