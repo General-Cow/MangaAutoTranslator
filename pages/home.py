@@ -1,3 +1,3 @@
 import streamlit as st
 
-st.write("I will provide a instruction thing here later.")
+st.write("I will provide an instruction thing here later.")

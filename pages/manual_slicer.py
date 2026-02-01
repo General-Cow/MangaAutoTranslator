@@ -10,9 +10,6 @@ import io
 from pathlib import Path
 from src.slicer_tools import MangaTextSlicer
 
-# add bulk download of boxes as clips
-# need to fix png display issue in matplotlib window.
-
 # Streamlit App
 st.set_page_config(page_title="Manga Text Box Slicer", layout="wide")
 
