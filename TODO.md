@@ -6,11 +6,14 @@
 - [] rework how I save and store pages and clips to better fit a good work flow.
 
 ## Autotranslator
+- [] Incorporate session states so moving to a different page doesnt erase translation
 - [] Integrate the use of the json files to get the clips. Could be used in lieu of image slices.
 - [] Custom input models/translation tools.
 - [] Keep playing with models. Not very good so far.
 - [] Incorporate evaluation tools later.
 - [] Consider adding OCR model selection later. Will need to rework src/ocr_extractor.py then to include multiple options.
+- [] Consider adding proprietary models with API calls. (i.e. OpenAI). DO NOT ACCIDENTALLY PUSH YOUR API KEY. Make it so it's manually loaded (and hidden)
+- [] Clear button
 
 ### slicer_tools
 - [] Implement manual slicing. Consider dropping since redundant with manual slicer page.
@@ -18,4 +21,16 @@
 
 ## Manual Slicer
 - [x] add bulk download of boxes as clips. May need to create folder in accordance with autotranslator needs to save them in for reuseability as presliced clips.
+- [] Be able to choose and clip collections of pages so i dont have to upload one at a time.
 - [] need to fix png display issue in matplotlib window.
+- [] save JSONs in same place as pg clips for use in replacing text bubbles
+
+## Reader
+- [] create a reading page that loads saved translations to read full chapters/collections. May include insertion of translations in text bubbles (can use JSONs from Manual Slicer to accomplish)
+
+## Workflow concept
+Select collection of docs
+slice each page, saving jsons and clips
+translate clips by page, save translations
+reload location/translations
+view on page
