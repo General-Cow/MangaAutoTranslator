@@ -133,13 +133,25 @@ if st.session_state.image is not None:
                 use_container_width=True
             )
             
+            st.markdown("#### 📥 Export Sliced Images")
+            # Mass download all slices into folder 
+            if st.button("⬇️ Bulk Download Images", use_container_width=True):
+                folder_path = Path(f"./data/{Path(st.session_state.image_name).stem}/clips")
+                folder_path.mkdir(parents=True, exist_ok=True)
+
+
+                for i, box in  enumerate(st.session_state.boxes):
+                    x, y, w, h = box['x'], box['y'], box['width'], box['height']
+                    cropped = st.session_state.image.crop((x, y, x+w, y+h))
+                    cropped.save(f"data/{Path(st.session_state.image_name).stem}/clips/clip{i+1}.png")
+
             # Slice and preview
             st.markdown("---")
             st.markdown("#### ✂️ Sliced Images")
             
             if st.button("Preview All Slices", use_container_width=True):
                 st.session_state.show_slices = True
-            
+
             if st.session_state.get('show_slices', False):
                 for i, box in enumerate(st.session_state.boxes):
                     x, y, w, h = box['x'], box['y'], box['width'], box['height']

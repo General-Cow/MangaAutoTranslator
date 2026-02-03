@@ -45,8 +45,6 @@ if st.button("Translate Manga"):
             with col1:
                 st.image(f"{manga_loc}/pages/{img}")
 
-            # regex to extract page number from img name.
-
             # Likely turn col two into a function to handle different clipping styles.
             # Will need to add features such as number of slices. Here or later add a feature to review clips before translation?
             with col2:
