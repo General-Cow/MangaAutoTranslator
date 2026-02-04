@@ -8,6 +8,8 @@
 ## Autotranslator
 - [] Incorporate session states so moving to a different page doesnt erase translation
 - [] Integrate the use of the json files to get the clips. Could be used in lieu of image slices.
+- [x] Create json downloader of translated clips.
+- [] Upload pretranslated clips? Or is viewer for that? Begs question of a rework.
 - [] Custom input models/translation tools.
 - [] Keep playing with models. Not very good so far.
 - [] Incorporate evaluation tools later.
@@ -34,3 +36,10 @@ slice each page, saving jsons and clips
 translate clips by page, save translations
 reload location/translations
 view on page
+
+or
+ 
+ Slicer
+ Translator
+ (Possible placer page for text)
+ Viewer
