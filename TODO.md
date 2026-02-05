@@ -23,12 +23,14 @@
 
 ## Manual Slicer
 - [x] add bulk download of boxes as clips. May need to create folder in accordance with autotranslator needs to save them in for reuseability as presliced clips.
-- [] Be able to choose and clip collections of pages so i dont have to upload one at a time.
+- [] Be able to choose and clip collections of pages so I don't have to upload one at a time.
 - [] need to fix png display issue in matplotlib window.
 - [] save JSONs in same place as pg clips for use in replacing text bubbles
 
 ## Reader
-- [] create a reading page that loads saved translations to read full chapters/collections. May include insertion of translations in text bubbles (can use JSONs from Manual Slicer to accomplish)
+- [x] create a reading page that loads saved translations to read full chapters/collections.
+- [] Include insertion of translations in text bubbles (can use JSONs from Manual Slicer to accomplish)
+- [] Improve reading UI. Buttons? Markdown?
 
 ## Workflow concept
 Select collection of docs
@@ -43,3 +45,21 @@ or
  Translator
  (Possible placer page for text)
  Viewer
+
+## File Structure
+keep building out and place jsons
+Data/
+|-- Manga/
+  |-- Chapter/
+      |-- pg1
+      |-- pg2
+      |-- etc
+      |--clips/
+         |-- pg1
+         |   |--clip1
+         |   |--clip2
+         |   |--clipetc
+         |
+         |-- pg2
+             |etc 
+         etc
