@@ -23,9 +23,10 @@
 
 ## Manual Slicer
 - [x] add bulk download of boxes as clips. May need to create folder in accordance with autotranslator needs to save them in for reuseability as presliced clips.
-- [] Be able to choose and clip collections of pages so I don't have to upload one at a time.
+- [] Be able to choose and clip collections of pages so I don't have to upload one at a time. That said is this important?
 - [] need to fix png display issue in matplotlib window.
 - [] save JSONs in same place as pg clips for use in replacing text bubbles
+- [] HIGH PRI: fix clip saving location path. Right now just saving in data.
 
 ## Reader
 - [x] create a reading page that loads saved translations to read full chapters/collections.

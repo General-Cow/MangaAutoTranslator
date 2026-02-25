@@ -21,7 +21,7 @@ with st.sidebar:
         ("Presliced Clips", "Manual Slicing", "Text Region Detection"),
     )
     
-    translation_method = st.selectbox('Translation Method', ('Translation Model', 'LLM Based', 'Both'))
+    translation_method = st.selectbox('Translation Method', ('Translation Model', 'LLM Based', 'Both', "API"))
 
     if translation_method in ['Translation Model', 'Both']:
         translation_model = st.selectbox(
@@ -34,8 +34,12 @@ with st.sidebar:
             "LLM Model",
             ('gemma3:4b', 'gemma3:12b', "7shi/gemma-2-jpn-translate:2b-instruct-q8_0", "mistral-nemo"),
         )
+
+    if translation_method == "API":
+        st.text_input("API Key", placeholder="Enter your API key here")
+        # keep playing with openai api. I hate their docs, i hate their docs, i hate their docs.
     
-    # May need to rework. Seems that some stuff still needs to be saved or reworked when i swap pages.
+    # May need to rework. Seems that some stuff still needs to be saved or reworked when I swap pages.
     st.session_state.manga_loc = manga_loc
     st.session_state.clipping_style = clipping_style
     st.session_state.translation_method = translation_method

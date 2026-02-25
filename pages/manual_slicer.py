@@ -34,7 +34,7 @@ with st.sidebar:
         # Load image
         st.session_state.image = Image.open(uploaded_file)
         st.session_state.image_name = uploaded_file.name
-        
+
         # Show preview
         st.image(st.session_state.image, caption="Uploaded Image", use_container_width=True)
         

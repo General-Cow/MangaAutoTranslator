@@ -1,4 +1,5 @@
 # MangaAutoTranslator
+**Note that this README is out of date. Significant changes have been made to this repo**
 
 ## Project Overview
 MangaAutoTranslator is a Python-based script designed to automate the the process of extracting and translation of Japanese test from manga. It does so by utilizing Optical Character Recognition and machine translation pipelines to translate from Japanese to English.
