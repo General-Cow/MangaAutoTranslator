@@ -60,3 +60,17 @@ def get_llm_translations(jp_text_list, llm_model='gemma3:4b'):
         translated_text_list.append(response.message.content)
 
     return translated_text_list
+
+def get_api_translations(jp_text_list, api_func): #autogen'd. Need to make it work with OpenAI api. It obviously doesn't work right now.
+    """
+    Translate extracted text to English using a custom API function.
+    
+    Args:
+        jp_text_list (list of strings): List of extracted Japanese text
+        api_func (function): A function that takes a string input and returns a translated string output.
+        
+    Returns:
+        list: list of translated English text
+    """
+    translated_text_list = [api_func(text) for text in jp_text_list]
+    return translated_text_list
