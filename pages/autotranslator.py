@@ -32,7 +32,7 @@ with st.sidebar:
     if translation_method in ['LLM Based', 'Both']:
         llm_model = st.selectbox(
             "LLM Model",
-            ('gemma3:4b', 'gemma3:12b', "7shi/gemma-2-jpn-translate:2b-instruct-q8_0", "mistral-nemo"),
+            ('gemma3:4b', 'gemma3:12b', 'llama3', "7shi/gemma-2-jpn-translate:2b-instruct-q8_0", "mistral-nemo"),
         )
 
     if translation_method == "API":

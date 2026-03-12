@@ -15,15 +15,23 @@ Features include preprocessing, OCR, autotranslation and a reader.
 
 ## Installation/Dependencies
 
-This repo was built on Python version 3.12.6. The CUDA/PyTorch environment used was built on version 12.6.
+This repository was built on Python version 3.12.6. The CUDA/PyTorch environment used was built on version 12.6.
 
-A requirements.txt file is provided with dependencies for this repository. install using the following command:
+A virtual environment is recommended and a requirements.txt file is provided with dependencies for this repository.
+
+Install using the following command:
 
 ```python
 pip install -r requirements.txt
 ```
 
-## Pages
+## How to Use
+To open this app open a terminal, navigate to the repository directory, and enter the following command
+
+```python
+streamlit run app.py
+```
+
 Will include description and instructions for each page. Currently WIP.
 
 ### Home Page
