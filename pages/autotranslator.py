@@ -7,9 +7,9 @@ from src.translator import get_translations, get_llm_translations
 from src.evaluator import eval_translations, reference_wrapper
 
 
-st.set_page_config(page_title="Manga Auto Translator", layout="wide")
+st.set_page_config(page_title="Manga AutoTranslator", layout="wide")
 
-st.title("💬 Manga Auto Translator")
+st.title("💬 Manga AutoTranslator")
 st.markdown("Automated JP to EN translation tool for manga pages using OCR, translation models, and LLMs.")
 
 with st.sidebar:
