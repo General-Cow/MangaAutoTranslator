@@ -2,7 +2,9 @@ import streamlit as st
 import json
 import os
 
-st.set_page_config(page_title="Manga Auto Translator", layout="wide")
+st.set_page_config(page_title="Manga Reader", layout="wide")
+
+st.title("📖 Manga Reader")
 
 st.write("This is a page for viewing translated pages/collections.")
 st.write("I will load saved translations and will develop it as a nice and easy reader.")

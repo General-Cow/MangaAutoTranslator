@@ -4,12 +4,12 @@
 
 ## Across Multiple
 - [] rework how I save and store pages and clips to better fit a good work flow.
+- [] cross page session states. For example get the positions within manual slicer, go over to autotranslator, and read in manga reader without losing stuff
 
 ## Autotranslator
 - [] Incorporate session states so moving to a different page doesnt erase translation
-- [] Integrate the use of the json files to get the clips. Could be used in lieu of image slices.
+- [x] Integrate the use of the json files to get the clips. Could be used in lieu of image slices.
 - [x] Create json downloader of translated clips.
-- [] Upload pretranslated clips? Or is viewer for that? Begs question of a rework.
 - [] Custom input models/translation tools.
 - [] Keep playing with models. Not very good so far.
 - [] Incorporate evaluation tools later.
@@ -18,7 +18,6 @@
 - [] Clear button
 
 ### slicer_tools
-- [] Implement manual slicing. Consider dropping since redundant with manual slicer page.
 - [] Implement text region detection.
 
 ## Manual Slicer
@@ -30,7 +29,7 @@
 
 ## Reader
 - [x] create a reading page that loads saved translations to read full chapters/collections.
-- [] Include insertion of translations in text bubbles (can use JSONs from Manual Slicer to accomplish)
+- [] Include insertion of translations in text bubbles (can use position JSONs from Manual Slicer to accomplish)
 - [] Improve reading UI. Buttons? Markdown?
 
 ## Workflow concept

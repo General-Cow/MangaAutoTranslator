@@ -1,7 +1,7 @@
 import os
 import json
 import streamlit as st
-from src.ocr_extractor import ocr_extractor
+from src.ocr_extractor import ocr_extractor, ocr_extractor_crop
 from src.slicer_tools import manual_slicing, text_region_detection
 from src.translator import get_translations, get_llm_translations
 from src.evaluator import eval_translations, reference_wrapper
@@ -18,7 +18,7 @@ with st.sidebar:
 
     clipping_style = st.selectbox(
         "Clipping Style",
-        ("Presliced Clips", "Manual Slicing", "Text Region Detection"),
+        ("Presliced Clips", "Position JSON", "Full Page", "Text Region Detection"),
     )
     
     translation_method = st.selectbox('Translation Method', ('Translation Model', 'LLM Based', 'Both', "API"))
@@ -86,7 +86,29 @@ def _compute_translations(manga_loc, clipping_style, translation_method, transla
 
                 clip_idx += 1
 
-        elif clipping_style == "Manual Slicing":
+        elif clipping_style == "Position JSON":
+            json_path = os.path.join(manga_loc, "positions", f"pg{page_num}_positions.json")
+            if not os.path.isfile(json_path):
+                continue
+            with open(json_path, "r") as f:
+                positions = json.load(f)
+            for box in positions.get("boxes", []):
+                x, y, w, h = box['x'], box['y'], box['width'], box['height']
+                jp_text_list = ocr_extractor_crop(img=img, file_dir=pages_dir, crop_coords=(x, y, w, h))
+                translations["jp"][f"pg{page_num}"][f"box{clip_idx}"] = jp_text_list[0]
+
+                if translation_method in ['Translation Model', 'Both']:
+                    translated = get_translations(jp_text_list, translation_model=translation_model, concat_sent=False)
+                    translations["en"]["translation model"][f"pg{page_num}"][f"box{clip_idx}"] = translated[0]
+                    translations["en"]["translation model"]["model used"] = translation_model
+
+                if translation_method in ['LLM Based', 'Both']:
+                    llm_translated = get_llm_translations(jp_text_list, llm_model=llm_model)
+                    translations["en"]["llm"][f"pg{page_num}"][f"box{clip_idx}"] = llm_translated[0]
+                    translations["en"]["llm"]["model used"] = llm_model
+                clip_idx += 1
+
+        elif clipping_style == "Full Page":
             manual_slicing(os.path.join(manga_loc, f"pages/pg{page_num}"))
             break
 

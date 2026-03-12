@@ -128,7 +128,7 @@ if st.session_state.image is not None:
             st.download_button(
                 label="💾 Download JSON",
                 data=json.dumps(export_data, indent=2),
-                file_name=f"{Path(st.session_state.image_name).stem}_boxes.json",
+                file_name=f"{Path(st.session_state.image_name).stem}_positions.json",
                 mime="application/json",
                 use_container_width=True
             )

@@ -1,4 +1,5 @@
 import os
+from PIL import Image
 from manga_ocr import MangaOcr
 
 
@@ -26,5 +27,26 @@ def ocr_extractor(img="", file_dir="", multi_file=False):
     
     mocr = MangaOcr()
     jp_text_list = [mocr(os.path.join(file_dir, file)) for file in files]
+
+    return jp_text_list
+
+def ocr_extractor_crop(img="", file_dir="", crop_coords=(0, 0, 0, 0)):
+    """
+    Extract Japanese Text using MangaOCR with cropping.
+    
+    Args:
+        img (str): Path to the image file.
+        file_dir (str): Path to directory containing the image.
+        crop_coords (tuple): Coordinates for cropping in the format (x, y, width, height).
+
+    Returns:
+        list: List of extracted Japanese text
+    """
+
+    mocr = MangaOcr()
+    x, y, w, h = crop_coords
+    box = (x, y, x + w, y + h)
+    region = Image.open(os.path.join(file_dir, img)).crop(box)
+    jp_text_list = [mocr(region)]
 
     return jp_text_list
