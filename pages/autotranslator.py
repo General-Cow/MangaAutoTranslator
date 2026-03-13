@@ -89,12 +89,14 @@ def _compute_translations(manga_loc, clipping_style, translation_method, transla
                     llm_translated = get_llm_translations(jp_text_list, llm_model=llm_model)
                     translations["en"]["llm"][f"pg{page_num}"][f"box{clip_idx}"] = llm_translated[0]
                     translations["en"]["llm"]["model used"] = llm_model
-                clip_idx += 1
+
 
                 if translation_method == "API":
                     api_translated = get_api_translations(jp_text_list, api_key=api_key)
                     translations["en"]["api"][f"pg{page_num}"][f"box{clip_idx}"] = api_translated[0]
                     translations["en"]["api"]["model used"] = "OpenAI API"
+                clip_idx += 1
+
 
         elif clipping_style == "Presliced Clips":
             clips_dir = os.path.join(manga_loc, "clips", f"pg{page_num}_clips")

@@ -15,6 +15,7 @@ Start implementing for bulk collection rather than one page at a time
 
 ## Autotranslator
 - [] Incorporate session states so moving to a different page doesnt erase translation
+- [] Clean up page by moving _compute_translations and _render_translations to a different script
 - [x] Integrate the use of the json files to get the clips. Could be used in lieu of image slices.
 - [x] Create json downloader of translated clips.
 - [] Custom input models/translation tools.
@@ -28,7 +29,7 @@ Start implementing for bulk collection rather than one page at a time
         - The one page of random_manga1 using GPT 5 with high effort cost $0.10, used 436 input tokens, and about 10K output tokens (fucking somehow)
             - input cost was trivial, like a tenth of a cent. Output was pretty much the whole cost. 
         - [] need to try different reasoning options
-        - [] HIGH PRI: Fix _render to render api translations.
+        - [x] HIGH PRI: Fix _render to render api translations.
             - [x] Test fix
     - add options and implement other proprietary models. Claude perhaps?
 - [] Clear button
