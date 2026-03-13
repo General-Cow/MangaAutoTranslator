@@ -18,21 +18,21 @@ with st.sidebar:
 
     clipping_style = st.selectbox(
         "Clipping Style",
-        ("Presliced Clips", "Position JSON", "Full Page", "Text Region Detection"),
+        ("Position JSON", "Presliced Clips", "Full Page", "Text Region Detection"),
     )
     
-    translation_method = st.selectbox('Translation Method', ('Translation Model', 'LLM Based', 'Both', "API"))
+    translation_method = st.selectbox('Translation Method', ('LLM Based', 'Translation Model', 'Both', "API"))
+
+    if translation_method in ['LLM Based', 'Both']:
+        llm_model = st.selectbox(
+            "LLM Model",
+            ('gemma3:4b', 'gemma3:12b', 'llama3', "7shi/gemma-2-jpn-translate:2b-instruct-q8_0", "mistral-nemo"),
+        )
 
     if translation_method in ['Translation Model', 'Both']:
         translation_model = st.selectbox(
             "Translation Model",
             ("Helsinki-NLP/opus-mt-ja-en", "facebook/nllb-200-3.3B", "facebook/nllb-200-distilled-600M"), 
-        )
-    
-    if translation_method in ['LLM Based', 'Both']:
-        llm_model = st.selectbox(
-            "LLM Model",
-            ('gemma3:4b', 'gemma3:12b', 'llama3', "7shi/gemma-2-jpn-translate:2b-instruct-q8_0", "mistral-nemo"),
         )
 
     if translation_method == "API":
@@ -66,27 +66,7 @@ def _compute_translations(manga_loc, clipping_style, translation_method, transla
         translations["en"]["translation model"][f"pg{page_num}"] = {}
         translations["en"]["llm"][f"pg{page_num}"] = {}
 
-        if clipping_style == "Presliced Clips":
-            clips_dir = os.path.join(manga_loc, "clips", f"pg{page_num}_clips")
-            if not os.path.isdir(clips_dir):
-                continue
-            for clip in os.listdir(clips_dir):
-                jp_text_list = ocr_extractor(img=clip, file_dir=clips_dir, multi_file=False)
-                translations["jp"][f"pg{page_num}"][f"clip{clip_idx}"] = jp_text_list[0]
-
-                if translation_method in ['Translation Model', 'Both']:
-                    translated = get_translations(jp_text_list, translation_model=translation_model, concat_sent=False)
-                    translations["en"]["translation model"][f"pg{page_num}"][f"clip{clip_idx}"] = translated[0]
-                    translations["en"]["translation model"]["model used"] = translation_model
-
-                if translation_method in ['LLM Based', 'Both']:
-                    llm_translated = get_llm_translations(jp_text_list, llm_model=llm_model)
-                    translations["en"]["llm"][f"pg{page_num}"][f"clip{clip_idx}"] = llm_translated[0]
-                    translations["en"]["llm"]["model used"] = llm_model
-
-                clip_idx += 1
-
-        elif clipping_style == "Position JSON":
+        if clipping_style == "Position JSON":
             json_path = os.path.join(manga_loc, "positions", f"pg{page_num}_positions.json")
             if not os.path.isfile(json_path):
                 continue
@@ -108,9 +88,40 @@ def _compute_translations(manga_loc, clipping_style, translation_method, transla
                     translations["en"]["llm"]["model used"] = llm_model
                 clip_idx += 1
 
-        elif clipping_style == "Full Page":
-            manual_slicing(os.path.join(manga_loc, f"pages/pg{page_num}"))
-            break
+        elif clipping_style == "Presliced Clips":
+            clips_dir = os.path.join(manga_loc, "clips", f"pg{page_num}_clips")
+            if not os.path.isdir(clips_dir):
+                continue
+            for clip in os.listdir(clips_dir):
+                jp_text_list = ocr_extractor(img=clip, file_dir=clips_dir, multi_file=False)
+                translations["jp"][f"pg{page_num}"][f"clip{clip_idx}"] = jp_text_list[0]
+
+                if translation_method in ['Translation Model', 'Both']:
+                    translated = get_translations(jp_text_list, translation_model=translation_model, concat_sent=False)
+                    translations["en"]["translation model"][f"pg{page_num}"][f"clip{clip_idx}"] = translated[0]
+                    translations["en"]["translation model"]["model used"] = translation_model
+
+                if translation_method in ['LLM Based', 'Both']:
+                    llm_translated = get_llm_translations(jp_text_list, llm_model=llm_model)
+                    translations["en"]["llm"][f"pg{page_num}"][f"clip{clip_idx}"] = llm_translated[0]
+                    translations["en"]["llm"]["model used"] = llm_model
+
+                clip_idx += 1
+
+        elif clipping_style == "Full Page": # Be aware this method is not good. But it is left for use if desired. May work better with better OCR models.
+            jp_text_list = ocr_extractor(img=img, file_dir=pages_dir, multi_file=False)
+            translations["jp"][f"pg{page_num}"]["full_page"] = jp_text_list[0]
+            if translation_method in ['Translation Model', 'Both']:
+                translated = get_translations(jp_text_list, translation_model=translation_model, concat_sent=False)
+                translations["en"]["translation model"][f"pg{page_num}"]["full_page"] = translated[0]
+                translations["en"]["translation model"]["model used"] = translation_model
+
+            if translation_method in ['LLM Based', 'Both']:
+                llm_translated = get_llm_translations(jp_text_list, llm_model=llm_model)
+                translations["en"]["llm"][f"pg{page_num}"]["full_page"] = llm_translated[0]
+                translations["en"]["llm"]["model used"] = llm_model
+
+
 
         elif clipping_style == "Text Region Detection":
             text_region_detection(os.path.join(manga_loc, f"pages/pg{page_num}"))
