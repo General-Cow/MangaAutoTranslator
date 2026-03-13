@@ -28,7 +28,7 @@ if 'image_name' not in st.session_state:
 with st.sidebar:
     st.header("📁 Upload Image")
     
-    uploaded_file = st.file_uploader("Choose a manga image", type=["png", "jpg", "jpeg"])
+    uploaded_file = st.file_uploader("Choose a manga image", type=["png", "jpg", "jpeg", "bmp", "gif", "webp"])
     
     if uploaded_file is not None:
         # Load image

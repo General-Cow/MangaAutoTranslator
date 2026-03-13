@@ -1,7 +1,8 @@
 # TODO
 
 ## Current Working Goal
-Just implement JSON positionas the main method and remove clip option. Cleans up the code and makes saving stuff so much easier
+Just implement JSON position as the main method. Keeping clips for case where file format is not good for manual slicer.
+Cleans up the code and makes saving stuff so much easier
 Start implementing for bulk collection rather than one page at a time
 
 ## Home page
@@ -23,15 +24,20 @@ Start implementing for bulk collection rather than one page at a time
 - [] Consider adding OCR model selection later.
     - Will need to rework src/ocr_extractor.py then to include multiple options.
 - [] Consider adding proprietary models with API calls. (i.e. OpenAI). DO NOT ACCIDENTALLY PUSH YOUR API KEY. Make it so it's manually loaded (and hidden)
-    - Implement OpenAI
+    - [X] Implement OpenAI
+        - The one page of random_manga1 using GPT 5 with high effort cost $0.10, used 436 input tokens, and about 10K output tokens (fucking somehow)
+            - input cost was trivial, like a tenth of a cent. Output was pretty much the whole cost. 
+        - [] need to try different reasoning options
+        - [] HIGH PRI: Fix _render to render api translations.
+            - [x] Test fix
     - add options and implement other proprietary models. Claude perhaps?
 - [] Clear button
 - [] add boxes to show position of text boxes when using json
 - [] Very long term: Implement multiple agents voting on translations and/or agentic methods
 
 ### slicer_tools
-- [] Implement full page?
-    - its going to suck. Probably include a warning somewhere
+- [x] Implement full page?
+    - [] its going to suck so include a warning somewhere
 - [] Implement text region detection.
     - need to look into different libraries, tools, and papers on this
 

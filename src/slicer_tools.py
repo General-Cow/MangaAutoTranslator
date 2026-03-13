@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 
-# Looks like pngs are getting messed up by when displayed in the matplotlib window. Possibly due to alpha channel (according to autocomplete at least)?
+# Looks like pngs are getting messed up by when displayed in the matplotlib window.
+# Seems like it was related to a specific png. Keep an eye on it and see if I need some sort of handling later. 
 class MangaTextSlicer:
     def __init__(self, image):
         self.image = image

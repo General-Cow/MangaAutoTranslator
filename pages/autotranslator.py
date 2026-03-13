@@ -3,7 +3,7 @@ import json
 import streamlit as st
 from src.ocr_extractor import ocr_extractor, ocr_extractor_crop
 from src.slicer_tools import manual_slicing, text_region_detection
-from src.translator import get_translations, get_llm_translations
+from src.translator import get_translations, get_llm_translations, get_api_translations
 from src.evaluator import eval_translations, reference_wrapper
 
 
@@ -36,7 +36,7 @@ with st.sidebar:
         )
 
     if translation_method == "API":
-        st.text_input("API Key", placeholder="Enter your API key here")
+        api_key = st.text_input("API Key", placeholder="Enter your API key here", type="password")
         # keep playing with openai api. I hate their docs, i hate their docs, i hate their docs.
     
     # May need to rework. Seems that some stuff still needs to be saved or reworked when I swap pages.
@@ -45,11 +45,12 @@ with st.sidebar:
     st.session_state.translation_method = translation_method
     st.session_state.translation_model = translation_model if 'translation_model' in locals() else None
     st.session_state.llm_model = llm_model if 'llm_model' in locals() else None
+    st.session_state.api_key = api_key if 'api_key' in locals() else None
 
 
-def _compute_translations(manga_loc, clipping_style, translation_method, translation_model=None, llm_model=None):
+def _compute_translations(manga_loc, clipping_style, translation_method, translation_model=None, llm_model=None, api_key=None):
     """Run OCR and translations and store results in session state."""
-    translations = {"jp": {}, "en": {"translation model": {}, "llm": {}}}
+    translations = {"jp": {}, "en": {"translation model": {}, "llm": {}, "api": {}}}
     pages = []
 
     pages_dir = os.path.join(manga_loc, "pages")
@@ -65,6 +66,8 @@ def _compute_translations(manga_loc, clipping_style, translation_method, transla
         translations["jp"][f"pg{page_num}"] = {}
         translations["en"]["translation model"][f"pg{page_num}"] = {}
         translations["en"]["llm"][f"pg{page_num}"] = {}
+        translations["en"]["api"][f"pg{page_num}"] = {}
+
 
         if clipping_style == "Position JSON":
             json_path = os.path.join(manga_loc, "positions", f"pg{page_num}_positions.json")
@@ -87,6 +90,11 @@ def _compute_translations(manga_loc, clipping_style, translation_method, transla
                     translations["en"]["llm"][f"pg{page_num}"][f"box{clip_idx}"] = llm_translated[0]
                     translations["en"]["llm"]["model used"] = llm_model
                 clip_idx += 1
+
+                if translation_method == "API":
+                    api_translated = get_api_translations(jp_text_list, api_key=api_key)
+                    translations["en"]["api"][f"pg{page_num}"][f"box{clip_idx}"] = api_translated[0]
+                    translations["en"]["api"]["model used"] = "OpenAI API"
 
         elif clipping_style == "Presliced Clips":
             clips_dir = os.path.join(manga_loc, "clips", f"pg{page_num}_clips")
@@ -150,6 +158,7 @@ def _render_translations(manga_loc):
             jp_page = translations.get("jp", {}).get(f"pg{page_num}", {})
             tm_page = translations.get("en", {}).get("translation model", {}).get(f"pg{page_num}", {})
             llm_page = translations.get("en", {}).get("llm", {}).get(f"pg{page_num}", {})
+            api_page = translations.get("en", {}).get("api", {}).get(f"pg{page_num}", {})
 
             for clip_key, jp_text in jp_page.items():
                 st.markdown(f"**{clip_key} (JP):** {jp_text}")
@@ -157,13 +166,16 @@ def _render_translations(manga_loc):
                     st.markdown(f"- **Translation model:** {tm_page[clip_key]}")
                 if clip_key in llm_page:
                     st.markdown(f"- **LLM:** {llm_page[clip_key]}")
+                if clip_key in api_page:
+                    st.markdown(f"- **API:** {api_page[clip_key]}")
 
 
 if st.button("Translate Manga", key="translate_manga"):
     # compute translations and store in session state
     _compute_translations(manga_loc, clipping_style, translation_method,
                           translation_model=(translation_model if 'translation_model' in globals() else None),
-                          llm_model=(llm_model if 'llm_model' in globals() else None))
+                          llm_model=(llm_model if 'llm_model' in globals() else None),
+                          api_key=st.session_state.get("api_key"))
 
 # If translations exist in session state, render them and provide download
 if st.session_state.get("translated", False):
