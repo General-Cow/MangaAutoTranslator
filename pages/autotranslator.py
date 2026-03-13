@@ -77,23 +77,23 @@ def _compute_translations(manga_loc, clipping_style, translation_method, transla
                 positions = json.load(f)
             for box in positions.get("boxes", []):
                 x, y, w, h = box['x'], box['y'], box['width'], box['height']
-                jp_text_list = ocr_extractor_crop(img=img, file_dir=pages_dir, crop_coords=(x, y, w, h))
-                translations["jp"][f"pg{page_num}"][f"box{clip_idx}"] = jp_text_list[0]
+                jp_text = ocr_extractor_crop(img=img, file_dir=pages_dir, crop_coords=(x, y, w, h))
+                translations["jp"][f"pg{page_num}"][f"box{clip_idx}"] = jp_text
 
                 if translation_method in ['Translation Model', 'Both']:
-                    translated = get_translations(jp_text_list, translation_model=translation_model, concat_sent=False)
-                    translations["en"]["translation model"][f"pg{page_num}"][f"box{clip_idx}"] = translated[0]
+                    translated = get_translations(jp_text, translation_model=translation_model, concat_sent=False)
+                    translations["en"]["translation model"][f"pg{page_num}"][f"box{clip_idx}"] = translated
                     translations["en"]["translation model"]["model used"] = translation_model
 
                 if translation_method in ['LLM Based', 'Both']:
-                    llm_translated = get_llm_translations(jp_text_list, llm_model=llm_model)
-                    translations["en"]["llm"][f"pg{page_num}"][f"box{clip_idx}"] = llm_translated[0]
+                    llm_translated = get_llm_translations(jp_text, llm_model=llm_model)
+                    translations["en"]["llm"][f"pg{page_num}"][f"box{clip_idx}"] = llm_translated
                     translations["en"]["llm"]["model used"] = llm_model
 
 
                 if translation_method == "API":
-                    api_translated = get_api_translations(jp_text_list, api_key=api_key)
-                    translations["en"]["api"][f"pg{page_num}"][f"box{clip_idx}"] = api_translated[0]
+                    api_translated = get_api_translations(jp_text, api_key=api_key)
+                    translations["en"]["api"][f"pg{page_num}"][f"box{clip_idx}"] = api_translated
                     translations["en"]["api"]["model used"] = "OpenAI API"
                 clip_idx += 1
 
@@ -103,32 +103,32 @@ def _compute_translations(manga_loc, clipping_style, translation_method, transla
             if not os.path.isdir(clips_dir):
                 continue
             for clip in os.listdir(clips_dir):
-                jp_text_list = ocr_extractor(img=clip, file_dir=clips_dir, multi_file=False)
-                translations["jp"][f"pg{page_num}"][f"clip{clip_idx}"] = jp_text_list[0]
+                jp_text = ocr_extractor(img=clip, file_dir=clips_dir)
+                translations["jp"][f"pg{page_num}"][f"clip{clip_idx}"] = jp_text
 
                 if translation_method in ['Translation Model', 'Both']:
-                    translated = get_translations(jp_text_list, translation_model=translation_model, concat_sent=False)
-                    translations["en"]["translation model"][f"pg{page_num}"][f"clip{clip_idx}"] = translated[0]
+                    translated = get_translations(jp_text, translation_model=translation_model)
+                    translations["en"]["translation model"][f"pg{page_num}"][f"clip{clip_idx}"] = translated
                     translations["en"]["translation model"]["model used"] = translation_model
 
                 if translation_method in ['LLM Based', 'Both']:
-                    llm_translated = get_llm_translations(jp_text_list, llm_model=llm_model)
-                    translations["en"]["llm"][f"pg{page_num}"][f"clip{clip_idx}"] = llm_translated[0]
+                    llm_translated = get_llm_translations(jp_text, llm_model=llm_model)
+                    translations["en"]["llm"][f"pg{page_num}"][f"clip{clip_idx}"] = llm_translated
                     translations["en"]["llm"]["model used"] = llm_model
 
                 clip_idx += 1
 
         elif clipping_style == "Full Page": # Be aware this method is not good. But it is left for use if desired. May work better with better OCR models.
-            jp_text_list = ocr_extractor(img=img, file_dir=pages_dir, multi_file=False)
-            translations["jp"][f"pg{page_num}"]["full_page"] = jp_text_list[0]
+            jp_text = ocr_extractor(img=img, file_dir=pages_dir, multi_file=False)
+            translations["jp"][f"pg{page_num}"]["full_page"] = jp_text
             if translation_method in ['Translation Model', 'Both']:
-                translated = get_translations(jp_text_list, translation_model=translation_model, concat_sent=False)
-                translations["en"]["translation model"][f"pg{page_num}"]["full_page"] = translated[0]
+                translated = get_translations(jp_text, translation_model=translation_model)
+                translations["en"]["translation model"][f"pg{page_num}"]["full_page"] = translated
                 translations["en"]["translation model"]["model used"] = translation_model
 
             if translation_method in ['LLM Based', 'Both']:
-                llm_translated = get_llm_translations(jp_text_list, llm_model=llm_model)
-                translations["en"]["llm"][f"pg{page_num}"]["full_page"] = llm_translated[0]
+                llm_translated = get_llm_translations(jp_text, llm_model=llm_model)
+                translations["en"]["llm"][f"pg{page_num}"]["full_page"] = llm_translated
                 translations["en"]["llm"]["model used"] = llm_model
 
 

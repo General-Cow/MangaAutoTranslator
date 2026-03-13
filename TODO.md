@@ -10,6 +10,7 @@ Start implementing for bulk collection rather than one page at a time
 
 ## Across Multiple
 - [] rework how I save and store pages and clips to better fit a good work flow.
+- [X] Rework ocr_extractor, translator, and autotranslator page to remove extraneous list/multifile/concat sentence methods. No longer valid for this version of the repo.  
 - [] cross page session states. For example get the positions within manual slicer, go over to autotranslator, and read in manga reader without losing stuff
 - [] multipage workflow
 
@@ -78,6 +79,8 @@ or
 
 ## File Structure
 keep building out and place jsons
+This isn't actually displaying well in markdown. Fix this and actually reorganize repo for it.
+
 Data/
 |-- Manga/
   |-- Chapter/

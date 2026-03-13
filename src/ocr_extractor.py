@@ -3,7 +3,7 @@ from PIL import Image
 from manga_ocr import MangaOcr
 
 
-def ocr_extractor(img="", file_dir="", multi_file=False):
+def ocr_extractor(img="", file_dir=""):
     """
     Extract Japanese Text using MangaOCR.
     
@@ -15,20 +15,15 @@ def ocr_extractor(img="", file_dir="", multi_file=False):
     Returns:
         list: List of extracted Japanese text
     """
-
-    image_extensions = (".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp")
-    if multi_file:
-        files = [
-            f for f in os.listdir(file_dir)
-            if f.lower().endswith(image_extensions) and os.path.isfile(os.path.join(file_dir, f))
-        ]
-    else:
-        files = [img]
     
-    mocr = MangaOcr()
-    jp_text_list = [mocr(os.path.join(file_dir, file)) for file in files]
+    if not img.endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp")):
+        raise ValueError(f"Invalid image file: {img}. Supported formats: .png, .jpg, .jpeg, .bmp, .gif, .webp")
 
-    return jp_text_list
+    mocr = MangaOcr()
+    jp_text = mocr(os.path.join(file_dir, img))
+
+    return jp_text
+    
 
 def ocr_extractor_crop(img="", file_dir="", crop_coords=(0, 0, 0, 0)):
     """
@@ -43,10 +38,13 @@ def ocr_extractor_crop(img="", file_dir="", crop_coords=(0, 0, 0, 0)):
         list: List of extracted Japanese text
     """
 
+    if not img.endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp")):
+        raise ValueError(f"Invalid image file: {img}. Supported formats: .png, .jpg, .jpeg, .bmp, .gif, .webp")
+    
     mocr = MangaOcr()
     x, y, w, h = crop_coords
     box = (x, y, x + w, y + h)
     region = Image.open(os.path.join(file_dir, img)).crop(box)
-    jp_text_list = [mocr(region)]
+    jp_text = mocr(region)
 
-    return jp_text_list
+    return jp_text
