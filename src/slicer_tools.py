@@ -141,8 +141,6 @@ class MangaTextSlicer:
             st.info("Make sure you have tkinter installed. On Linux: `sudo apt-get install python3-tk`")
             return []
 
-def manual_slicing(page_path):
-    pass
     
 def text_region_detection(page_path):
     pass

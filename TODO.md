@@ -10,30 +10,32 @@ Start implementing for bulk collection rather than one page at a time
 
 ## Across Multiple
 - [] rework how I save and store pages and clips to better fit a good work flow.
-- [X] Rework ocr_extractor, translator, and autotranslator page to remove extraneous list/multifile/concat sentence methods. No longer valid for this version of the repo.  
 - [] cross page session states. For example get the positions within manual slicer, go over to autotranslator, and read in manga reader without losing stuff
 - [] multipage workflow
 
 ## Autotranslator
 - [] Incorporate session states so moving to a different page doesnt erase translation
-- [] Clean up page by moving _compute_translations and _render_translations to a different script
-- [x] Integrate the use of the json files to get the clips. Could be used in lieu of image slices.
-- [x] Create json downloader of translated clips.
+    - probably a multipage thing actually
+- [x] Clean up page by moving _compute_translations and _render_translations to a different script
 - [] Custom input models/translation tools.
     - 'not listed' option that runs an ollama pull? for input model
 - [] Keep playing with models.
 - [] Incorporate evaluation tools (much) later.
 - [] Consider adding OCR model selection later.
     - Will need to rework src/ocr_extractor.py then to include multiple options.
-- [] Consider adding proprietary models with API calls. (i.e. OpenAI). DO NOT ACCIDENTALLY PUSH YOUR API KEY. Make it so it's manually loaded (and hidden)
+- [] Right now I open a new API call for every image. It might be smart to try reworking so I'm not reinputting the instructions for every image as every token costs money. Need to be cost effective with API calls.
+- [x] Consider adding proprietary models with API calls. (i.e. OpenAI). DO NOT ACCIDENTALLY PUSH YOUR API KEY. Make it so it's manually loaded (and hidden)
     - [X] Implement OpenAI
         - The one page of random_manga1 using GPT 5 with high effort cost $0.10, used 436 input tokens, and about 10K output tokens (fucking somehow)
             - input cost was trivial, like a tenth of a cent. Output was pretty much the whole cost. 
-        - [] need to try different reasoning options
+        - [x] need to try different reasoning options
+            - didnt really seem to make a difference literally at all cost wise.
+                - What the hell does reasoning even do? I may have misunderstood what it does.
         - [x] HIGH PRI: Fix _render to render api translations.
             - [x] Test fix
-    - add options and implement other proprietary models. Claude perhaps?
-- [] Clear button
+- [] Add other API options and implement other proprietary models. Claude perhaps?
+    - likely low priority just because API costs mean this just isn't really economical.
+- [x] Clear button
 - [] add boxes to show position of text boxes when using json
 - [] Very long term: Implement multiple agents voting on translations and/or agentic methods
 
@@ -44,7 +46,6 @@ Start implementing for bulk collection rather than one page at a time
     - need to look into different libraries, tools, and papers on this
 
 ## Manual Slicer
-- [x] add bulk download of boxes as clips. May need to create folder in accordance with autotranslator needs to save them in for reuseability as presliced clips.
 - [] Be able to choose and clip collections of pages so I don't have to upload one at a time.
     - That said is this important?Depends on work flow I suppose.
 - [] need to fix png display issue in matplotlib window.
@@ -54,10 +55,10 @@ Start implementing for bulk collection rather than one page at a time
 - Consider reworking and removing clip slices and utilizing JSON only.
     - Seems to be a faster process. Perhaps try benchmarking?
     - IMPORTANT NOTE: This would simplify file structure.
-- [] HIGH PRI: fix clip saving location path. Right now just saving in data.
+- [] fix clip saving location path. Right now just saving in data.
 
 ## Reader
-- [x] create a reading page that loads saved translations to read full chapters/collections.
+- [] Do to _render_chapter something similar to what I did with _render_translations in the autotranslator
 - [] Include insertion of translations in text bubbles
     - can use position JSONs from Manual Slicer to accomplish
     - Include numbers
@@ -78,21 +79,4 @@ or
  Viewer
 
 ## File Structure
-keep building out and place jsons
-This isn't actually displaying well in markdown. Fix this and actually reorganize repo for it.
-
-Data/
-|-- Manga/
-  |-- Chapter/
-      |-- pg1
-      |-- pg2
-      |-- etc
-      |--clips/
-         |-- pg1
-         |   |--clip1
-         |   |--clip2
-         |   |--clipetc
-         |
-         |-- pg2
-             |etc 
-         etc
+Fix file structure to a consistent format and display here
