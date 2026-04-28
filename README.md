@@ -1,5 +1,4 @@
 # MangaAutoTranslator
-**Note that this README is out of date. Significant changes have been made to this repo**
 
 ## Project Overview
 MangaAutoTranslator is a Python-based Streamlit app meant to give English speakers who don't speak Japanese the ability to read and enjoy untranslated manga

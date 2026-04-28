@@ -1,28 +1,30 @@
 import streamlit as st
-import os
 
 
 def _render_translations(session_state):
     """Render images and translations from session state."""
-    manga_loc = session_state.get("manga_loc", "")
     
     translations = session_state.get("translations", {})
     pages = session_state.get("pages", [])
     if not pages:
         return
 
-    for img in pages:
-        page_num = img.split(".")[0].split("pg")[1]
-        st.write(f"Page {page_num}")
+    for page_key in pages:
+        st.write(f"Page {page_key}")
         col1, col2 = st.columns(2)
         with col1:
-            st.image(os.path.join(manga_loc, "pages", img))
+            # Get the image from the images dict in session state
+            images_dict = session_state.get("images_dict", {})
+            if images_dict and page_key in images_dict:
+                st.image(images_dict[page_key])
+            else:
+                st.warning(f"Image not found for page {page_key}. Available pages: {list(images_dict.keys())}")
         with col2:
             # Show JP text and translations if present
-            jp_page = translations.get("jp", {}).get(f"pg{page_num}", {})
-            tm_page = translations.get("en", {}).get("translation model", {}).get(f"pg{page_num}", {})
-            llm_page = translations.get("en", {}).get("llm", {}).get(f"pg{page_num}", {})
-            api_page = translations.get("en", {}).get("api", {}).get(f"pg{page_num}", {})
+            jp_page = translations.get("jp", {}).get(page_key, {})
+            tm_page = translations.get("en", {}).get("translation model", {}).get(page_key, {})
+            llm_page = translations.get("en", {}).get("llm", {}).get(page_key, {})
+            api_page = translations.get("en", {}).get("api", {}).get(page_key, {})
 
             for clip_key, jp_text in jp_page.items():
                 st.markdown(f"**{clip_key} (JP):** {jp_text}")

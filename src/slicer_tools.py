@@ -141,10 +141,6 @@ class MangaTextSlicer:
             st.info("Make sure you have tkinter installed. On Linux: `sudo apt-get install python3-tk`")
             return []
 
-    
-def text_region_detection(page_path):
-    pass
-
 
 # def slice_grid(page_path, rows=2, cols=2, output_dir=None):
 #     os.makedirs(output_dir, exist_ok=True)

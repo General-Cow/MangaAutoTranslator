@@ -1,72 +1,94 @@
 import streamlit as st
 import matplotlib
 matplotlib.use('TkAgg')  # Use TkAgg backend for interactive window
-# import matplotlib.pyplot as plt
-# import matplotlib.patches as patches
-from PIL import Image
-# import numpy as np
+from PIL import Image, ImageDraw
 import json
 import io
 from pathlib import Path
 from src.slicer_tools import MangaTextSlicer
+import zipfile
 
 # Streamlit App
 st.set_page_config(page_title="Manga Text Box Slicer", layout="wide")
 
 st.title("✂️ Manga Text Box Slicer")
-st.markdown("Interactive matplotlib-based tool for precise text box selection")
+st.markdown("Interactive matplotlib-based tool for precise text box selection - Batch Edition")
 
 # Initialize session state
-if 'boxes' not in st.session_state:
-    st.session_state.boxes = []
-if 'image' not in st.session_state:
-    st.session_state.image = None
-if 'image_name' not in st.session_state:
-    st.session_state.image_name = None
+if 'uploaded_images' not in st.session_state:
+    st.session_state.uploaded_images = {}
+if 'current_image_index' not in st.session_state:
+    st.session_state.current_image_index = 0
+if 'annotations' not in st.session_state:
+    st.session_state.annotations = {}  # {image_name: boxes}
+if 'image_names_order' not in st.session_state:
+    st.session_state.image_names_order = []
 
 # Sidebar
 with st.sidebar:
-    st.header("📁 Upload Image")
+    st.header("📁 Upload Images")
     
-    uploaded_file = st.file_uploader("Choose a manga image", type=["png", "jpg", "jpeg", "bmp", "gif", "webp"])
+    uploaded_files = st.file_uploader("Choose manga images", type=["png", "jpg", "jpeg", "bmp", "gif", "webp"], accept_multiple_files=True)
     
-    if uploaded_file is not None:
-        # Load image
-        st.session_state.image = Image.open(uploaded_file)
-        st.session_state.image_name = uploaded_file.name
-
-        # Show preview
-        st.image(st.session_state.image, caption="Uploaded Image", use_container_width=True)
+    if uploaded_files:
+        # Load all images
+        for uploaded_file in uploaded_files:
+            if uploaded_file.name not in st.session_state.uploaded_images:
+                st.session_state.uploaded_images[uploaded_file.name] = Image.open(uploaded_file)
+                st.session_state.image_names_order.append(uploaded_file.name)
         
+        # Show batch progress
         st.markdown("---")
-        st.markdown("### 🖱️ Instructions")
-        st.info("""
-        1. Click **"Open Annotation Tool"** below
-        2. A matplotlib window will open
-        3. **Click and drag** to draw boxes
-        4. **Backspace** to undo last box
-        5. **Enter** to finish and return to Streamlit
-        """)
+        st.subheader("📊 Batch Progress")
+        total_images = len(st.session_state.image_names_order)
+        annotated_count = sum(1 for name in st.session_state.image_names_order if name in st.session_state.annotations)
+        
+        st.metric("Progress", f"{annotated_count}/{total_images} annotated")
+        
+        # Progress bar
+        progress = annotated_count / total_images if total_images > 0 else 0
+        st.progress(progress)
+        
+        # Image list with status
+        st.markdown("#### Images to Process")
+        for idx, name in enumerate(st.session_state.image_names_order):
+            status = "✅" if name in st.session_state.annotations else "⏳"
+            if st.button(f"{status} {name}", key=f"select_{idx}"):
+                st.session_state.current_image_index = idx
+                st.rerun()
 
 # Main area
-if st.session_state.image is not None:
+if st.session_state.uploaded_images:
+    current_image_name = st.session_state.image_names_order[st.session_state.current_image_index]
+    current_image = st.session_state.uploaded_images[current_image_name]
+    current_boxes = st.session_state.annotations.get(current_image_name, [])
+    
+    # Header with progress
+    col_header1, col_header2, col_header3 = st.columns([2, 1, 1])
+    with col_header1:
+        st.subheader(f"📋 {current_image_name}")
+    with col_header2:
+        st.metric("Image", f"{st.session_state.current_image_index + 1}/{len(st.session_state.image_names_order)}")
+    with col_header3:
+        st.metric("Boxes", len(current_boxes))
+    
     col1, col2 = st.columns([2, 1])
     
     with col1:
         st.subheader("📊 Annotation Tool")
         
-        if st.button("🎯 Open Annotation Tool", type="primary", use_container_width=True):
+        if st.button("🎯 Open Annotation Tool", type="primary", use_container_width=True, key="open_annotation_tool"):
             st.warning("⏳ Matplotlib window should open in a new window. Check your taskbar if you don't see it!")
             
             try:
                 # Create slicer and show
-                slicer = MangaTextSlicer(st.session_state.image)
+                slicer = MangaTextSlicer(current_image)
                 boxes = slicer.show()
                 
                 # Store results
                 if boxes:
-                    st.session_state.boxes = boxes
-                    st.success(f"✅ Created {len(boxes)} text boxes!")
+                    st.session_state.annotations[current_image_name] = boxes
+                    st.success(f"✅ Created {len(boxes)} text boxes for {current_image_name}!")
                     st.rerun()
                 else:
                     st.info("No boxes were created. The window may have closed without annotations.")
@@ -79,21 +101,18 @@ if st.session_state.image is not None:
                 - On Windows: Should work by default
                 - On Mac: `brew install python-tk`
                 - On Linux: `sudo apt-get install python3-tk`
-                
-                **Alternative:** Try the standalone matplotlib version instead.
                 """)
         
         # Show current boxes on image
-        if st.session_state.boxes:
+        if current_boxes:
             st.markdown("---")
             st.subheader("📦 Annotated Image")
             
             # Draw boxes on image
-            img_with_boxes = st.session_state.image.copy()
-            from PIL import ImageDraw
+            img_with_boxes = current_image.copy()
             draw = ImageDraw.Draw(img_with_boxes)
             
-            for i, box in enumerate(st.session_state.boxes):
+            for i, box in enumerate(current_boxes):
                 x, y, w, h = box['x'], box['y'], box['width'], box['height']
                 draw.rectangle([x, y, x+w, y+h], outline='lime', width=3)
                 draw.rectangle([x, y-25, x+35, y], fill='lime')
@@ -104,96 +123,125 @@ if st.session_state.image is not None:
     with col2:
         st.subheader("📋 Results")
         
-        if st.session_state.boxes:
-            st.metric("Total Boxes", len(st.session_state.boxes))
+        if current_boxes:
+            st.metric("Total Boxes", len(current_boxes))
             
             # Show box details
             st.markdown("#### Box Coordinates")
-            for i, box in enumerate(st.session_state.boxes):
+            for i, box in enumerate(current_boxes):
                 with st.expander(f"Box {i+1}"):
                     st.write(f"**Position:** ({box['x']}, {box['y']})")
                     st.write(f"**Size:** {box['width']} × {box['height']} px")
             
-            # Export JSON
+            # Export single image JSON
             st.markdown("---")
-            st.markdown("#### 📥 Export Data")
+            st.markdown("#### 📥 Export Current")
             
             export_data = {
-                "image_name": st.session_state.image_name,
-                "image_width": st.session_state.image.width,
-                "image_height": st.session_state.image.height,
-                "boxes": st.session_state.boxes
+                "image_name": current_image_name,
+                "image_width": current_image.width,
+                "image_height": current_image.height,
+                "boxes": current_boxes
             }
             
             st.download_button(
                 label="💾 Download JSON",
                 data=json.dumps(export_data, indent=2),
-                file_name=f"{Path(st.session_state.image_name).stem}_positions.json",
+                file_name=f"{Path(current_image_name).stem}_positions.json",
                 mime="application/json",
                 use_container_width=True
             )
             
-            st.markdown("#### 📥 Export Sliced Images")
-            # Mass download all slices into folder 
-            if st.button("⬇️ Bulk Download Images", use_container_width=True):
-                folder_path = Path(f"./data/{Path(st.session_state.image_name).stem}/clips")
-                folder_path.mkdir(parents=True, exist_ok=True)
-
-
-                for i, box in  enumerate(st.session_state.boxes):
-                    x, y, w, h = box['x'], box['y'], box['width'], box['height']
-                    cropped = st.session_state.image.crop((x, y, x+w, y+h))
-                    cropped.save(f"data/{Path(st.session_state.image_name).stem}/clips/clip{i+1}.png")
-
-            # Slice and preview
-            st.markdown("---")
-            st.markdown("#### ✂️ Sliced Images")
-            
-            if st.button("Preview All Slices", use_container_width=True):
-                st.session_state.show_slices = True
-
-            if st.session_state.get('show_slices', False):
-                for i, box in enumerate(st.session_state.boxes):
-                    x, y, w, h = box['x'], box['y'], box['width'], box['height']
-                    cropped = st.session_state.image.crop((x, y, x+w, y+h))
-                    
-                    st.image(cropped, caption=f"Box {i+1}", width=200)
-                    
-                    # Download individual slice
-                    buf = io.BytesIO()
-                    cropped.save(buf, format='PNG')
-                    st.download_button(
-                        label=f"⬇️ Download Box {i+1}",
-                        data=buf.getvalue(),
-                        file_name=f"box_{i+1}.png",
-                        mime="image/png",
-                        key=f"download_{i}",
-                        use_container_width=True
-                    )
-            
             # Clear button
-            st.markdown("---")
-            if st.button("🗑️ Clear All Boxes", use_container_width=True):
-                st.session_state.boxes = []
-                st.session_state.show_slices = False
+            if st.button("🗑️ Clear Boxes", use_container_width=True, key="clear_boxes"):
+                st.session_state.annotations[current_image_name] = []
                 st.rerun()
         else:
             st.info("👈 Click 'Open Annotation Tool' to start drawing boxes")
+    
+    # Navigation buttons
+    st.markdown("---")
+    nav_col1, nav_col2, nav_col3, nav_col4 = st.columns(4)
+    
+    with nav_col1:
+        if st.session_state.current_image_index > 0:
+            if st.button("⬅️ Previous", use_container_width=True, key="nav_previous"):
+                st.session_state.current_image_index -= 1
+                st.rerun()
+    
+    with nav_col2:
+        if st.session_state.current_image_index < len(st.session_state.image_names_order) - 1:
+            if st.button("Next ➡️", use_container_width=True, key="nav_next"):
+                st.session_state.current_image_index += 1
+                st.rerun()
+    
+    with nav_col3:
+        if st.session_state.current_image_index < len(st.session_state.image_names_order) - 1:
+            if st.button("Skip ⏭️", use_container_width=True, key="nav_skip"):
+                st.session_state.current_image_index += 1
+                st.rerun()
+    
+    with nav_col4:
+        pass
+    
+    # Batch export section
+    st.markdown("---")
+    st.subheader("📦 Batch Export")
+    
+    annotated_images = {name: st.session_state.annotations[name] 
+                       for name in st.session_state.image_names_order 
+                       if name in st.session_state.annotations}
+    
+    if annotated_images:
+        st.info(f"✅ Ready to export {len(annotated_images)}/{len(st.session_state.image_names_order)} images")
+        
+        col_export1, col_export2 = st.columns(2)
+        
+        with col_export1:
+            # Download all JSONs as zip
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                for image_name, boxes in annotated_images.items():
+                    image_obj = st.session_state.uploaded_images[image_name]
+                    export_data = {
+                        "image_name": image_name,
+                        "image_width": image_obj.width,
+                        "image_height": image_obj.height,
+                        "boxes": boxes
+                    }
+                    json_filename = f"{Path(image_name).stem}_positions.json"
+                    zip_file.writestr(json_filename, json.dumps(export_data, indent=2))
+            zip_buffer.seek(0)
+            st.download_button(
+                label="📥 Download All JSONs (ZIP)",
+                data=zip_buffer.getvalue(),
+                file_name="position_jsons.zip",
+                mime="application/zip",
+                use_container_width=True,
+                key="download_all_jsons_zip"
+            )
+        
+        with col_export2:
+            # Download combined JSON
+            combined_data = {}
+            for image_name, boxes in annotated_images.items():
+                image_obj = st.session_state.uploaded_images[image_name]
+                combined_data[image_name] = {
+                    "image_width": image_obj.width,
+                    "image_height": image_obj.height,
+                    "boxes": boxes
+                }
+            st.download_button(
+                label="📄 Download Combined JSON",
+                data=json.dumps(combined_data, indent=2),
+                file_name="all_annotations.json",
+                mime="application/json",
+                use_container_width=True,
+                key="download_combined_json"
+            )
+    else:
+        st.warning("⚠️ Annotate at least one image to enable batch export")
 
 else:
     # Welcome screen
-    st.info("👈 Upload a manga image from the sidebar to begin")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown("### 📤 Upload")
-        st.markdown("Upload your manga page image")
-    
-    with col2:
-        st.markdown("### ✏️ Annotate")
-        st.markdown("Draw boxes with matplotlib's interactive tool")
-    
-    with col3:
-        st.markdown("### 💾 Export")
-        st.markdown("Download coordinates and sliced images")
+    st.info("👈 Upload manga images from the sidebar to begin batch annotation")
