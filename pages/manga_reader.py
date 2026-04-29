@@ -6,9 +6,7 @@ st.set_page_config(page_title="Manga Reader", layout="wide")
 
 st.title("📖 Manga Reader")
 
-st.write("This is a page for viewing translated pages/collections.")
-st.write("I will load saved translations and will develop it as a nice and easy reader.")
-st.write("Features may include viewing original image, translated text overlay, toggling between original and translated, etc.")
+st.write("This is a page for viewing previously translated manga.")
 
 with st.sidebar:
     st.header("📁 Upload Files")
@@ -104,14 +102,6 @@ def _render_chapter(pages, images_dict, translations):
 pages = st.session_state.get("pages", [])
 images_dict = st.session_state.get("images_dict", {})
 translations = st.session_state.get("translations", {})
-
-# Debug info
-with st.expander("📊 Debug Info"):
-    st.write(f"Pages: {pages}")
-    st.write(f"Images dict keys: {list(images_dict.keys())}")
-    st.write(f"Translations keys: {list(translations.keys())}")
-    if "jp" in translations:
-        st.write(f"JP page keys: {list(translations.get('jp', {}).keys())}")
 
 if pages and translations:
     _render_chapter(pages, images_dict, translations)

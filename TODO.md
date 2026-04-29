@@ -42,6 +42,7 @@ Start implementing for bulk collection rather than one page at a time
 - Consider reworking and removing clip slices and utilizing JSON only.
     - Considered done. clips < jsons
 - [x] fix clip saving location path. Right now just saving in data.
+- [] implement positions json to default to one json rather than a json per page
 
 ## Reader
 - [] Do to _render_chapter something similar to what I did with _render_translations in the autotranslator
